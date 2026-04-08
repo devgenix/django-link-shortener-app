@@ -1,3 +1,4 @@
 Django==5.0
 gunicorn
 django-extensions
+# Triggering deployment to check CI/CD pipeline
