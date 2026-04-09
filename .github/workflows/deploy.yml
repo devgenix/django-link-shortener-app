@@ -25,13 +25,24 @@ jobs:
               sudo usermod -aG docker ubuntu
             fi
 
-            # Setup directory
-            if [ ! -d "/home/ubuntu/app" ]; then
+            # Ensure directory exists and has correct permissions
+            sudo mkdir -p /home/ubuntu/app
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/app
+
+            # Setup directory and handle Git safe directory
+            if [ ! -d "/home/ubuntu/app/.git" ]; then
+              rm -rf /home/ubuntu/app/*
               git clone https://github.com/devgenix/django-link-shortener-app.git /home/ubuntu/app
             fi
 
             cd /home/ubuntu/app
-            git pull origin main
+            
+            # Configure git safe directory to avoid ownership errors
+            git config --global --add safe.directory /home/ubuntu/app
+            
+            # Reset and pull latest
+            git fetch origin main
+            git reset --hard origin/main
 
             # Run with Docker Compose
             sudo docker-compose down || true
